@@ -1,18 +1,15 @@
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 class Product {
     String name;
     double price;
-    
+
     Product(String name, double price) {
         this.name = name;
         this.price = price;
     }
-    
+
     @Override
     public String toString() {
         return name + " - $" + price;
@@ -20,69 +17,86 @@ class Product {
 }
 
 class ECommerceSystem {
-    private JFrame frame;
-    private DefaultListModel<Product> productList;
-    private DefaultListModel<Product> cartList;
-    
+    private ArrayList<Product> productList = new ArrayList<>();
+    private ArrayList<Product> cartList = new ArrayList<>();
+
     ECommerceSystem() {
-        frame = new JFrame("E-Commerce System");
-        productList = new DefaultListModel<>();
-        cartList = new DefaultListModel<>();
-        
-        productList.addElement(new Product("Laptop", 999.99));
-        productList.addElement(new Product("Phone", 499.99));
-        productList.addElement(new Product("Headphones", 79.99));
-        
-        JList<Product> productListView = new JList<>(productList);
-        JList<Product> cartListView = new JList<>(cartList);
-        
-        JButton addToCartButton = new JButton("Add to Cart");
-        addToCartButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Product selectedProduct = productListView.getSelectedValue();
-                if (selectedProduct != null) {
-                    cartList.addElement(selectedProduct);
-                }
-            }
-        });
-        
-        JButton removeFromCartButton = new JButton("Remove from Cart");
-        removeFromCartButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Product selectedProduct = cartListView.getSelectedValue();
-                if (selectedProduct != null) {
-                    cartList.removeElement(selectedProduct);
-                }
-            }
-        });
-
-        JButton checkoutButton = new JButton("Checkout");
-        checkoutButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                double total = 0;
-                for (int i = 0; i < cartList.getSize(); i++) {
-                    total += cartList.getElementAt(i).price;
-                }
-                JOptionPane.showMessageDialog(frame, "Total: $" + total);
-            }
-        });
-        
-        frame.setLayout(new GridLayout(2, 2));
-        frame.add(new JScrollPane(productListView));
-        frame.add(new JScrollPane(cartListView));
-        frame.add(addToCartButton);
-        frame.add(removeFromCartButton);
-        frame.add(checkoutButton);
-
-        frame.setSize(400, 300);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
+        productList.add(new Product("Laptop", 999.99));
+        productList.add(new Product("Phone", 499.99));
+        productList.add(new Product("Headphones", 79.99));
     }
-    
+
+    void showProducts() {
+        System.out.println("\n=== Products ===");
+        for (int i = 0; i < productList.size(); i++) {
+            System.out.println((i + 1) + ". " + productList.get(i));
+        }
+    }
+
+    void showCart() {
+        System.out.println("\n=== Cart ===");
+        if (cartList.isEmpty()) {
+            System.out.println("Cart is empty!");
+        } else {
+            for (Product p : cartList) {
+                System.out.println("- " + p);
+            }
+        }
+    }
+
+    void addToCart(int index) {
+        if (index >= 1 && index <= productList.size()) {
+            cartList.add(productList.get(index - 1));
+            System.out.println("Added to cart: " + productList.get(index - 1).name);
+        } else {
+            System.out.println("Invalid product number!");
+        }
+    }
+
+    void checkout() {
+        double total = 0;
+        for (Product p : cartList) {
+            total += p.price;
+        }
+        System.out.println("\n=== Checkout ===");
+        System.out.printf("Total: $%.2f%n", total);
+        cartList.clear();
+        System.out.println("Order placed successfully!");
+    }
+
     public static void main(String[] args) {
-        new ECommerceSystem();
+        ECommerceSystem system = new ECommerceSystem();
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Welcome to E-Commerce System!");
+
+        while (true) {
+            System.out.println("\n1. Show Products");
+            System.out.println("2. Add to Cart");
+            System.out.println("3. Show Cart");
+            System.out.println("4. Checkout");
+            System.out.println("5. Exit");
+            System.out.print("Choose: ");
+
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1: system.showProducts(); break;
+                case 2:
+                    system.showProducts();
+                    System.out.print("Enter product number: ");
+                    int num = scanner.nextInt();
+                    system.addToCart(num);
+                    break;
+                case 3: system.showCart(); break;
+                case 4: system.checkout(); break;
+                case 5:
+                    System.out.println("Goodbye!");
+                    scanner.close();
+                    System.exit(0);
+                default:
+                    System.out.println("Invalid choice!");
+            }
+        }
     }
 }
