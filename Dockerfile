@@ -6,4 +6,6 @@ COPY *.java .
 
 RUN javac *.java
 
-CMD ["java", "ECommerceSystem"]
+ENV JAVA_TOOL_OPTIONS="-Djava.awt.headless=true"
+
+CMD ["java", "-Djava.awt.headless=true", "ECommerceSystem"]
