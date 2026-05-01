@@ -1,4 +1,4 @@
-﻿name: Deploy to Azure AKS
+name: Deploy to Azure AKS
 
 on:
   push:
@@ -39,6 +39,7 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
+          kubectl apply -f k8s/
           kubectl set image deployment/ecommerce-deployment ecommerce=${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       - name: Verify Deployment
