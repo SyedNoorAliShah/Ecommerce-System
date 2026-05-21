@@ -32,7 +32,7 @@ class ECommerceSystem {
             System.out.println((i + 1) + ". " + productList.get(i));
         }
     }
-
+docker ps
     void showCart() {
         System.out.println("\n=== Cart ===");
         if (cartList.isEmpty()) {
