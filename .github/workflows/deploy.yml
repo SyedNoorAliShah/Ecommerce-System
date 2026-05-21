@@ -1,18 +1,34 @@
+<<<<<<< HEAD
 name: Deploy to Azure ACR
+=======
+name: Deploy to Azure AKS
+>>>>>>> e04ee9ea1f63d46a9c2025e7cfbbf160f3ad5dae
 
 on:
   push:
     branches:
       - main
 
+<<<<<<< HEAD
 jobs:
   build-and-push:
+=======
+env:
+  ACR_NAME: ecommerceacr
+  IMAGE_NAME: ecommerce-system
+  AKS_CLUSTER: ecommerce-aks
+  RESOURCE_GROUP: ecommerce-rg
+
+jobs:
+  build-and-deploy:
+>>>>>>> e04ee9ea1f63d46a9c2025e7cfbbf160f3ad5dae
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+<<<<<<< HEAD
       - name: Login to Azure ACR
         uses: azure/docker-login@v1
         with:
@@ -33,3 +49,31 @@ jobs:
 
       - name: Success!
         run: echo "✅ Image successfully pushed to Azure ACR!"
+=======
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Login to ACR
+        run: |
+          az acr login --name ${{ env.ACR_NAME }}
+
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+          docker push ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+      - name: Set AKS Context
+        run: |
+          az aks get-credentials --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER }}
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f k8s/
+          kubectl set image deployment/ecommerce-deployment ecommerce=${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+      - name: Verify Deployment
+        run: |
+          kubectl rollout status deployment/ecommerce-deployment
+>>>>>>> e04ee9ea1f63d46a9c2025e7cfbbf160f3ad5dae
